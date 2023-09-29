@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    Greeting(MainViewModelImpl())
                 }
             }
         }
@@ -30,9 +30,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(viewModel: MainViewModelImpl, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = "Hello ${viewModel.screenName}!",
         modifier = modifier
     )
 }
@@ -41,6 +41,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     AndroidKotlinTemplateTheme {
-        Greeting("Android")
+        Greeting(MainViewModelImpl())
     }
 }
