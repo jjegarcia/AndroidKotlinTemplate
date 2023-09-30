@@ -22,4 +22,8 @@ class MainModule {
 //    @Singleton
 //    @Provides
 //    fun provideDatabaseHandler(): DatabaseHandlerI = DatabaseHandler()
+
+    @Singleton
+    @Provides
+    fun provideContext(@ApplicationContext context: Context) = context
 }

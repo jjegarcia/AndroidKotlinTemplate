@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting(MainViewModelImpl())
+                    Greeting(MainViewModelImpl(this@MainActivity))
                 }
             }
         }
