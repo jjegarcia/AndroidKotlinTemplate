@@ -70,5 +70,13 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    //Picasso
     implementation 'com.squareup.picasso:picasso:2.5.2'
+    // Moshi
+    implementation 'com.squareup.moshi:moshi-kotlin:1.15.0'
+    // Retrofit with Moshi Converter
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    // Coil
+    implementation "io.coil-kt:coil:2.4.0"
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }
