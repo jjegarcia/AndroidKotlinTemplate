@@ -11,7 +11,6 @@ import coil.compose.AsyncImage
 
 data class ScreenData(
     val screenName: String,
-    val introImageId: Int,
     val url: String
 )
 

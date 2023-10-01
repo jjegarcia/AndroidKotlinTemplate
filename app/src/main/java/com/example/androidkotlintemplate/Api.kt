@@ -29,7 +29,7 @@ private val retrofit = Retrofit.Builder()
 /**
  * A public interface that exposes the [getPhotos] method
  */
-interface MarsApiService {
+interface ApiService {
     /**
      * Returns a [List] of [MarsPhoto] and this method can be called from a Coroutine.
      * The @GET annotation indicates that the "photos" endpoint will be requested with the GET
@@ -42,8 +42,8 @@ interface MarsApiService {
 /**
  * A public Api object that exposes the lazy-initialized Retrofit service
  */
-object MarsApi {
-    val retrofitService: MarsApiService by lazy { retrofit.create(MarsApiService::class.java) }
+object Api {
+    val retrofitService: ApiService by lazy { retrofit.create(ApiService::class.java) }
 }
 data class MarsPhoto(
     val id: String,

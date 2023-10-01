@@ -1,7 +1,5 @@
 package com.example.androidkotlintemplate
 
-import android.content.Context
-import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,7 +17,7 @@ interface MainViewModel {
 }
 
 @HiltViewModel
-class MainViewModelImpl @Inject constructor(val context: Context) : ViewModel(), MainViewModel {
+class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<ApiStatus>()
@@ -38,8 +36,7 @@ class MainViewModelImpl @Inject constructor(val context: Context) : ViewModel(),
     private val _screenData = MutableStateFlow(
         ScreenData(
             "Test",
-            getImage(null),
-            "https://res.cloudinary.com/demo/image/upload/v1212461204/sample.jpg"
+            ""
         )
     )
 
@@ -53,19 +50,18 @@ class MainViewModelImpl @Inject constructor(val context: Context) : ViewModel(),
 
     init {
         getMarsPhotos()
-        if(_photos.value?.isEmpty() == false){
-            _screenData.value.copy(url = "https://res.cloudinary.com/demo/image/upload/v1212461204/sample.jpg"
-            )
-        }
     }
 
     private fun getMarsPhotos() {
-
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
-                _photos.value = MarsApi.retrofitService.getPhotos()
+                _photos.value = Api.retrofitService.getPhotos()
                 _status.value = ApiStatus.DONE
+                if (_photos.value?.isEmpty() == false) {
+                    val temp = _screenData.value.copy(url = _photos.value!![0].imgSrcUrl)
+                    screenData.value = temp
+                }
             } catch (e: Exception) {
                 _status.value = ApiStatus.ERROR
                 _photos.value = listOf()
