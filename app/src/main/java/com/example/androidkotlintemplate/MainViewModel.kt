@@ -27,10 +27,10 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
 
     // Internally, we use a MutableLiveData, because we will be updating the List of MarsPhoto
     // with new values
-    private val _photos = MutableLiveData<List<MarsPhoto>>()
+    private val _photos = MutableLiveData<MarvellResponse>()
 
     // The external LiveData interface to the property is immutable, so only this class can modify
-    val photos: LiveData<List<MarsPhoto>> = _photos
+    val photos: LiveData<MarvellResponse> = _photos
 
 
     private val _screenData = MutableStateFlow(
@@ -56,15 +56,14 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
-                _photos.value = Api.retrofitService.getPhotos()
+                _photos.value = Api.retrofitService.getCharacters()
                 _status.value = ApiStatus.DONE
-                if (_photos.value?.isEmpty() == false) {
-                    val temp = _screenData.value.copy(url = _photos.value!![0].imgSrcUrl)
-                    screenData.value = temp
-                }
+//                if (_photos.value?.isEmpty() == false) {
+//                    screenData.value = screenData.value.copy(url = _photos.value!![0].imgSrcUrl)
+//                }
             } catch (e: Exception) {
                 _status.value = ApiStatus.ERROR
-                _photos.value = listOf()
+//                _photos.value = listOf()
             }
         }
     }
