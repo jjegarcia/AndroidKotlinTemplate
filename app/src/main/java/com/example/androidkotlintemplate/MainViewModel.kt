@@ -41,9 +41,11 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
         )
     )
 
-    private fun getImage(uri: URI?) = if (uri == null) R.drawable.ic_launcher_background
+    private fun getImage(uri: String?) = if (uri == null) R.drawable.ic_launcher_background
     else
         getImageFromOnline(uri)
+
+    private fun getUri(marvellResponse: MarvellResponse): String = marvellResponse.data.results.get(0).resourceURI
 
     private fun getImageFromOnline(uri: URI): Int = androidx.core.R.drawable.ic_call_answer
     override val screenData: MutableStateFlow<ScreenData>
@@ -57,7 +59,10 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
-                _photos.value = Api.retrofitService.getComics()
+                val response:MarvellResponse = Api.retrofitService.getComics()
+
+                _photos.value = response
+                screenData.value = screenData.value.copy(url = getImage(getUri(response)))
                 _status.value = ApiStatus.DONE
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
