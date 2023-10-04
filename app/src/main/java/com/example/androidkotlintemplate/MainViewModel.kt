@@ -1,5 +1,6 @@
 package com.example.androidkotlintemplate
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -49,21 +50,18 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
         get() = _screenData
 
     init {
-        getMarsPhotos()
+        getCharacterPhotos()
     }
 
-    private fun getMarsPhotos() {
+    private fun getCharacterPhotos() {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
-                _photos.value = Api.retrofitService.getCharacters()
+                _photos.value = Api.retrofitService.getComics()
                 _status.value = ApiStatus.DONE
-//                if (_photos.value?.isEmpty() == false) {
-//                    screenData.value = screenData.value.copy(url = _photos.value!![0].imgSrcUrl)
-//                }
             } catch (e: Exception) {
+                Log.i("Error:", e.toString())
                 _status.value = ApiStatus.ERROR
-//                _photos.value = listOf()
             }
         }
     }

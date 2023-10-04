@@ -1,142 +1,164 @@
 package com.example.androidkotlintemplate
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class MarvellResponse(
-    val attributionHTML: String,
-    val attributionText: String,
-    val code: Int,
-    val copyright: String,
-    val `data`: Data,
-    val etag: String,
-    val status: String
+    @field:Json(name = "attributionHTML") val attributionHTML: String,
+    @field:Json(name = "attributionText") val attributionText: String,
+    @field:Json(name = "code") val code: Int,
+    @field:Json(name = "copyright") val copyright: String,
+    @field:Json(name = "data") val data: Data,
+    @field:Json(name = "etag") val etag: String,
+    @field:Json(name = "status") val status: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Data(
-    val count: Int,
-    val limit: Int,
-    val offset: Int,
-    val results: List<Result>,
-    val total: Int
+    @field:Json(name = "count") val count: Int,
+    @field:Json(name = "limit") val limit: Int,
+    @field:Json(name = "offset") val offset: Int,
+    @field:Json(name = "results") val results: List<Result>,
+    @field:Json(name = "total") val total: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Result(
-    val characters: Characters,
-    val collectedIssues: List<CollectedIssue>,
-    val collections: List<Any>,
-    val creators: Creators,
-    val dates: List<Date>,
-    val description: String,
-    val diamondCode: String,
-    val digitalId: Int,
-    val ean: String,
-    val events: Events,
-    val format: String,
-    val id: Int,
-    val images: List<Image>,
-    val isbn: String,
-    val issn: String,
-    val issueNumber: Int,
-    val modified: String,
-    val pageCount: Int,
-    val prices: List<Price>,
-    val resourceURI: String,
-    val series: Series,
-    val stories: Stories,
-    val textObjects: List<TextObject>,
-    val thumbnail: Thumbnail,
-    val title: String,
-    val upc: String,
-    val urls: List<Url>,
-    val variantDescription: String,
-    val variants: List<Variant>
+    @field:Json(name = "characters") val characters: Characters,
+    @field:Json(name = "collectedIssues") val collectedIssues: List<CollectedIssue>,
+    @field:Json(name = "collections") val collections: List<Any>,
+    @field:Json(name = "creators") val creators: Creators,
+    @field:Json(name = "dates") val dates: List<Date>,
+    @field:Json(name = "description") val description: String? = null,
+    @field:Json(name = "diamondCode") val diamondCode: String,
+    @field:Json(name = "digitalId") val digitalId: Int,
+    @field:Json(name = "ean") val ean: String,
+    @field:Json(name = "events") val events: Events,
+    @field:Json(name = "format") val format: String,
+    @field:Json(name = "id") val id: Int,
+    @field:Json(name = "images") val images: List<Image>,
+    @field:Json(name = "isbn") val isbn: String,
+    @field:Json(name = "issn") val issn: String,
+    @field:Json(name = "issueNumber") val issueNumber: Int,
+    @field:Json(name = "modified") val modified: String,
+    @field:Json(name = "pageCount") val pageCount: Int,
+    @field:Json(name = "prices") val prices: List<Price>,
+    @field:Json(name = "resourceURI") val resourceURI: String,
+    @field:Json(name = "series") val series: Series,
+    @field:Json(name = "stories") val stories: Stories,
+    @field:Json(name = "textObjects") val textObjects: List<TextObject>,
+    @field:Json(name = "thumbnail") val thumbnail: Thumbnail,
+    @field:Json(name = "title") val title: String,
+    @field:Json(name = "upc") val upc: String,
+    @field:Json(name = "urls") val urls: List<Url>,
+    @field:Json(name = "variantDescription") val variantDescription: String,
+    @field:Json(name = "variants") val variants: List<Variant>
 )
 
+@JsonClass(generateAdapter = true)
 data class Characters(
-    val available: Int,
-    val collectionURI: String,
-    val items: List<Item>,
-    val returned: Int
+    @field:Json(name = "available") val available: Int,
+    @field:Json(name = "collectionURI") val collectionURI: String,
+    @field:Json(name = "items") val items: List<Item>,
+    @field:Json(name = "returned") val returned: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class CollectedIssue(
-    val name: String,
-    val resourceURI: String
+    @field:Json(name = "name") val name: String,
+    @field:Json(name = "resourceURI") val resourceURI: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Creators(
-    val available: Int,
-    val collectionURI: String,
-    val items: List<ItemX>,
-    val returned: Int
+    @field:Json(name = "available") val available: Int,
+    @field:Json(name = "collectionURI") val collectionURI: String,
+    @field:Json(name = "items") val items: List<ItemX>,
+    @field:Json(name = "returned") val returned: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Date(
-    val date: String,
-    val type: String
+    @field:Json(name = "date") val date: String,
+    @field:Json(name = "type") val type: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Events(
-    val available: Int,
-    val collectionURI: String,
-    val items: List<Any>,
-    val returned: Int
+    @field:Json(name = "available") val available: Int,
+    @field:Json(name = "collectionURI") val collectionURI: String,
+    @field:Json(name = "items") val items: List<Any>,
+    @field:Json(name = "returned") val returned: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class Image(
-    val extension: String,
-    val path: String
+    @field:Json(name = "extension") val extension: String,
+    @field:Json(name = "path") val path: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Price(
-    val price: Double,
-    val type: String
+    @field:Json(name = "price") val price: Double,
+    @field:Json(name = "type") val type: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Series(
-    val name: String,
-    val resourceURI: String
+    @field:Json(name = "name") val name: String,
+    @field:Json(name = "resourceURI") val resourceURI: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Stories(
-    val available: Int,
-    val collectionURI: String,
-    val items: List<ItemXX>,
-    val returned: Int
+    @field:Json(name = "available") val available: Int,
+    @field:Json(name = "collectionURI") val collectionURI: String,
+    @field:Json(name = "items") val items: List<ItemXX>,
+    @field:Json(name = "returned") val returned: Int
 )
 
+@JsonClass(generateAdapter = true)
 data class TextObject(
-    val language: String,
-    val text: String,
-    val type: String
+    @field:Json(name = "language") val language: String,
+    @field:Json(name = "text") val text: String,
+    @field:Json(name = "type") val type: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Thumbnail(
-    val extension: String,
-    val path: String
+    @field:Json(name = "extension") val extension: String,
+    @field:Json(name = "path") val path: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Url(
-    val type: String,
-    val url: String
+    @field:Json(name = "type") val type: String,
+    @field:Json(name = "url") val url: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Variant(
-    val name: String,
-    val resourceURI: String
+    @field:Json(name = "name") val name: String,
+    @field:Json(name = "resourceURI") val resourceURI: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Item(
-    val name: String,
-    val resourceURI: String
+    @field:Json(name = "name") val name: String,
+    @field:Json(name = "resourceURI") val resourceURI: String
 )
 
+@JsonClass(generateAdapter = true)
 data class ItemX(
-    val name: String,
-    val resourceURI: String,
-    val role: String
+    @field:Json(name = "name") val name: String,
+    @field:Json(name = "resourceURI") val resourceURI: String,
+    @field:Json(name = "role") val role: String
 )
 
+@JsonClass(generateAdapter = true)
 data class ItemXX(
-    val name: String,
-    val resourceURI: String,
-    val type: String
+    @field:Json(name = "name") val name: String,
+    @field:Json(name = "resourceURI") val resourceURI: String,
+    @field:Json(name = "type") val type: String
 )
