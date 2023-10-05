@@ -41,7 +41,7 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
     )
 
     private fun getUrl(thumbnail: Thumbnail): String {
-        val string = "${thumbnail.path}.${thumbnail.extension}"
+        val string = "${thumbnail.path}/portrait_incredible.${thumbnail.extension}"
         return string
     }
 
@@ -49,19 +49,18 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
         get() = _screenData
 
     init {
-        getCharacterPhotos()
+        getCharactersPhotos()
     }
 
-    private fun getCharacterPhotos() {
+    private fun getCharactersPhotos() {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
-                val response: CharactersResponse = Api.retrofitService.getCharacters()
-                val thumbnail = getThumbnail(response.data.results.get(0).name)
-                val url= getUrl(thumbnail)
+                val characters: CharactersResponse = Api.retrofitService.getCharacters()
+                val thumbnail = getThumbnail(characters.data.results.get(0).name)
+                val url = getUrl(thumbnail)
                 screenData.value =
-                    screenData.value.copy(url = "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/portrait_incredible.jpg")
-                _status.value = ApiStatus.DONE
+                    screenData.value.copy(url = url)
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
                 _status.value = ApiStatus.ERROR
