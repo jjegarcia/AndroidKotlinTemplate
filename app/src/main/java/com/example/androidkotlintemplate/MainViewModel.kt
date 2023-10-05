@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.net.URI
 import javax.inject.Inject
 
 enum class ApiStatus { LOADING, ERROR, DONE }
@@ -28,10 +27,10 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
 
     // Internally, we use a MutableLiveData, because we will be updating the List of MarsPhoto
     // with new values
-    private val _photos = MutableLiveData<MarvellResponse>()
+    private val _photos = MutableLiveData<String>()
 
     // The external LiveData interface to the property is immutable, so only this class can modify
-    val photos: LiveData<MarvellResponse> = _photos
+    val photos: LiveData<String> = _photos
 
 
     private val _screenData = MutableStateFlow(
@@ -41,13 +40,11 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
         )
     )
 
-    private fun getImage(uri: String?) = if (uri == null) R.drawable.ic_launcher_background
-    else
-        getImageFromOnline(uri)
+    private fun getUrl(thumbnail: Thumbnail): String {
+        val string = "${thumbnail.path}.${thumbnail.extension}"
+        return string
+    }
 
-    private fun getUri(marvellResponse: MarvellResponse): String = marvellResponse.data.results.get(0).resourceURI
-
-    private fun getImageFromOnline(uri: URI): Int = androidx.core.R.drawable.ic_call_answer
     override val screenData: MutableStateFlow<ScreenData>
         get() = _screenData
 
@@ -59,15 +56,28 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
-                val response:MarvellResponse = Api.retrofitService.getComics()
-
-                _photos.value = response
-                screenData.value = screenData.value.copy(url = getImage(getUri(response)))
+                val response: CharactersResponse = Api.retrofitService.getCharacters()
+                val thumbnail = getThumbnail(response.data.results.get(0).name)
+                val url= getUrl(thumbnail)
+                screenData.value =
+                    screenData.value.copy(url = "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/portrait_incredible.jpg")
                 _status.value = ApiStatus.DONE
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
                 _status.value = ApiStatus.ERROR
             }
         }
+    }
+
+    private suspend fun getThumbnail(name: String): Thumbnail {
+        var thumbNail = Thumbnail("", "")
+        try {
+            val response = Api.retrofitService.getCharacter(name)
+            thumbNail = response.data.results.get(0).thumbnail
+        } catch (e: Exception) {
+            Log.i("Error:", e.toString())
+            _status.value = ApiStatus.ERROR
+        }
+        return thumbNail
     }
 }
