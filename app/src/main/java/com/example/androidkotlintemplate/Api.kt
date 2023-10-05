@@ -30,12 +30,27 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface ApiService {
-    @GET("v1/public/comics")
+    @GET("/v1/public/comics")
     suspend fun getComics(
         @Query("ts") ts: String = TS,
         @Query("apikey") apikey: String = PUBLIC_KEY,
         @Query("hash") hash: String = hash()
-    ): MarvellResponse
+    ): ComicsResponse
+
+    @GET("/v1/public/characters")
+    suspend fun getCharacters(
+        @Query("ts") ts: String = TS,
+        @Query("apikey") apikey: String = PUBLIC_KEY,
+        @Query("hash") hash: String = hash()
+    ): CharactersResponse
+
+    @GET("/v1/public/characters")
+    suspend fun getCharacter(
+        @Query("name") name: String,
+        @Query("ts") ts: String = TS,
+        @Query("apikey") apikey: String = PUBLIC_KEY,
+        @Query("hash") hash: String = hash()
+    ): CharactersResponse
 }
 
 object Api {

@@ -4,27 +4,27 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class MarvellResponse(
+data class ComicsResponse(
     @field:Json(name = "attributionHTML") val attributionHTML: String,
     @field:Json(name = "attributionText") val attributionText: String,
     @field:Json(name = "code") val code: Int,
     @field:Json(name = "copyright") val copyright: String,
-    @field:Json(name = "data") val data: Data,
+    @field:Json(name = "data") val data: ComicsData,
     @field:Json(name = "etag") val etag: String,
     @field:Json(name = "status") val status: String
 )
 
 @JsonClass(generateAdapter = true)
-data class Data(
+data class ComicsData(
     @field:Json(name = "count") val count: Int,
     @field:Json(name = "limit") val limit: Int,
     @field:Json(name = "offset") val offset: Int,
-    @field:Json(name = "results") val results: List<Result>,
+    @field:Json(name = "results") val results: List<ComicsResult>,
     @field:Json(name = "total") val total: Int
 )
 
 @JsonClass(generateAdapter = true)
-data class Result(
+data class ComicsResult(
     @field:Json(name = "characters") val characters: Characters,
     @field:Json(name = "collectedIssues") val collectedIssues: List<CollectedIssue>,
     @field:Json(name = "collections") val collections: List<Any>,
@@ -34,7 +34,7 @@ data class Result(
     @field:Json(name = "diamondCode") val diamondCode: String,
     @field:Json(name = "digitalId") val digitalId: Int,
     @field:Json(name = "ean") val ean: String,
-    @field:Json(name = "events") val events: Events,
+    @field:Json(name = "events") val events: ComicsEvents,
     @field:Json(name = "format") val format: String,
     @field:Json(name = "id") val id: Int,
     @field:Json(name = "images") val images: List<Image>,
@@ -45,7 +45,7 @@ data class Result(
     @field:Json(name = "pageCount") val pageCount: Int,
     @field:Json(name = "prices") val prices: List<Price>,
     @field:Json(name = "resourceURI") val resourceURI: String,
-    @field:Json(name = "series") val series: Series,
+    @field:Json(name = "series") val series: ComicsSeries,
     @field:Json(name = "stories") val stories: Stories,
     @field:Json(name = "textObjects") val textObjects: List<TextObject>,
     @field:Json(name = "thumbnail") val thumbnail: Thumbnail,
@@ -85,7 +85,7 @@ data class Date(
 )
 
 @JsonClass(generateAdapter = true)
-data class Events(
+data class ComicsEvents(
     @field:Json(name = "available") val available: Int,
     @field:Json(name = "collectionURI") val collectionURI: String,
     @field:Json(name = "items") val items: List<Any>,
@@ -105,7 +105,7 @@ data class Price(
 )
 
 @JsonClass(generateAdapter = true)
-data class Series(
+data class ComicsSeries(
     @field:Json(name = "name") val name: String,
     @field:Json(name = "resourceURI") val resourceURI: String
 )
