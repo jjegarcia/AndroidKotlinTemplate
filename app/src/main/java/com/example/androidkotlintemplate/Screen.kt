@@ -28,17 +28,22 @@ fun Greeting(viewModel: MainViewModelImpl, modifier: Modifier = Modifier) {
             modifier = modifier
         )
         LazyColumn {
-            itemsIndexed(screenData.characters) { index, item ->
-                Text(text = screenData.characters.get(index).description)
-                AsyncImage(
-                    model = screenData.characters.get(index).url,
-                    error = painterResource(id = drawable.ic_call_decline),
-                    fallback = painterResource(id = R.drawable.ic_launcher_background),
-                    contentScale = ContentScale.FillWidth,
-                    placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                    contentDescription = "Intro Image"
-                )
+            itemsIndexed(screenData.characters) { index, _ ->
+                CharacterCard(screenData.characters[index])
             }
         }
     }
+}
+
+@Composable
+private fun CharacterCard(characterInfo: CharacterInfo) {
+    Text(text = characterInfo.description)
+    AsyncImage(
+        model = characterInfo.url,
+        error = painterResource(id = drawable.ic_call_decline),
+        fallback = painterResource(id = R.drawable.ic_launcher_background),
+        contentScale = ContentScale.FillWidth,
+        placeholder = painterResource(id = R.drawable.ic_launcher_background),
+        contentDescription = "Intro Image"
+    )
 }

@@ -20,7 +20,9 @@ interface MainViewModel {
 }
 
 @HiltViewModel
-class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
+class MainViewModelImpl @Inject constructor(
+    private val api: ApiService
+) : ViewModel(), MainViewModel, ApiService by api {
 
     private val _status = MutableLiveData<ApiStatus>()
 
@@ -41,9 +43,9 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
             _status.value = ApiStatus.LOADING
             try {
                 val characters: List<CharacterInfo> =
-                    Api.retrofitService.getCharacters().data.results.map { getCharacterInfo(it.name) }
+                    api.getCharacters().data.results.map { getCharacterInfo(it.name) }
                 screenData.value = screenData.value.copy(characters = characters)
-                _status.value=ApiStatus.DONE
+                _status.value = ApiStatus.DONE
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
                 _status.value = ApiStatus.ERROR
@@ -53,10 +55,10 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
 
     private suspend fun getCharacterInfo(name: String): CharacterInfo {
         try {
-            val character = Api.retrofitService.getCharacter(name)
+            val character = api.getCharacter(name)//retrofitService.getCharacter(name)
             return CharacterInfo(
-                url = getUrl(character.data.results.get(0).thumbnail),
-                description = character.data.results.get(0).description
+                url = getUrl(character.data.results[0].thumbnail),
+                description = character.data.results[0].description
             )
         } catch (e: Exception) {
             Log.i("Error:", e.toString())
