@@ -10,9 +10,9 @@ private const val PUBLIC_KEY = "e2d61498137ae803a0e479fecea99882"
 private const val TS = "1"
 
 
-fun hash(): String = BigInteger(
+private fun hash(): String = BigInteger(
     1,
-    MessageDigest.getInstance("MD5").digest("1$PRIVATE_KEY$PUBLIC_KEY".toByteArray())
+    MessageDigest.getInstance("MD5").digest("$TS$PRIVATE_KEY$PUBLIC_KEY".toByteArray())
 )
     .toString(16).padStart(32, '0')
 
