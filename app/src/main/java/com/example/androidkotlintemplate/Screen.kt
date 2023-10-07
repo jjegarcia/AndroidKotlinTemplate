@@ -1,5 +1,8 @@
 package com.example.androidkotlintemplate
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -10,8 +13,8 @@ import androidx.core.R.drawable
 import coil.compose.AsyncImage
 
 data class ScreenData(
-    val screenName: String,
-    val url: String
+    val screenName: String = "Test",
+    val characters: List<CharacterInfo> = listOf()
 )
 
 @Composable
@@ -19,12 +22,24 @@ fun Greeting(viewModel: MainViewModelImpl, modifier: Modifier = Modifier) {
 
     val screenData = viewModel.screenData.collectAsState().value
 
-    Text(
-        text = "Hello ${screenData.screenName}!",
-        modifier = modifier
-    )
+    Column {
+        Text(
+            text = "Hello ${screenData.screenName}!",
+            modifier = modifier
+        )
+        LazyColumn {
+            itemsIndexed(screenData.characters) { index, _ ->
+                CharacterCard(screenData.characters[index])
+            }
+        }
+    }
+}
+
+@Composable
+private fun CharacterCard(characterInfo: CharacterInfo) {
+    Text(text = characterInfo.description)
     AsyncImage(
-        model = screenData.url,
+        model = characterInfo.url,
         error = painterResource(id = drawable.ic_call_decline),
         fallback = painterResource(id = R.drawable.ic_launcher_background),
         contentScale = ContentScale.FillWidth,

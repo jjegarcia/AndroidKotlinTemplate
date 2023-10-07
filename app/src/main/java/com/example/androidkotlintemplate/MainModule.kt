@@ -1,29 +1,32 @@
 package com.example.androidkotlintemplate
 
-import android.content.Context
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
-/**
-* Hilt module that provides singleton (application-scoped) objects.
-*/
+private const val BASE_URL = "https://gateway.marvel.com"
+private val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
+
 @Module
 @InstallIn(SingletonComponent::class)
 class MainModule {
-//    @Singleton
-//    @Provides
-//    fun provideHealthServicesClient(@ApplicationContext context: Context): HealthServicesClient =
-//        HealthServices.getClient(context)
 
-//    @Singleton
-//    @Provides
-//    fun provideDatabaseHandler(): DatabaseHandlerI = DatabaseHandler()
+    @Singleton
+    @Provides
+    fun provideRetrofit(): Retrofit = Retrofit.Builder()
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .baseUrl(BASE_URL)
+        .build()
 
-//    @Singleton
-//    @Provides
-//    fun provideContext(@ApplicationContext context: Context) = context
+    @Singleton
+    @Provides
+    fun provideApiService(retrofit: Retrofit):ApiService= retrofit.create(ApiService::class.java)
 }

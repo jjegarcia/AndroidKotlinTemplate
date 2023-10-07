@@ -1,7 +1,6 @@
 package com.example.androidkotlintemplate
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,56 +10,41 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class ApiStatus { LOADING, ERROR, DONE }
+data class CharacterInfo(
+    val url: String = "",
+    val description: String = ""
+)
 
 interface MainViewModel {
     val screenData: MutableStateFlow<ScreenData>
 }
 
 @HiltViewModel
-class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
+class MainViewModelImpl @Inject constructor(
+    private val api: ApiService
+) : ViewModel(), MainViewModel, ApiService by api {
 
-    // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<ApiStatus>()
 
-    // The external immutable LiveData for the request status
-    val status: LiveData<ApiStatus> = _status
+    private val _screenData = MutableStateFlow(ScreenData())
 
-    // Internally, we use a MutableLiveData, because we will be updating the List of MarsPhoto
-    // with new values
-    private val _photos = MutableLiveData<String>()
-
-    // The external LiveData interface to the property is immutable, so only this class can modify
-    val photos: LiveData<String> = _photos
-
-
-    private val _screenData = MutableStateFlow(
-        ScreenData(
-            "Test",
-            ""
-        )
-    )
-
-    private fun getUrl(thumbnail: Thumbnail): String {
-        val string = "${thumbnail.path}.${thumbnail.extension}"
-        return string
-    }
+    private fun getUrl(thumbnail: Thumbnail): String =
+        "${thumbnail.path}/portrait_incredible.${thumbnail.extension}"
 
     override val screenData: MutableStateFlow<ScreenData>
         get() = _screenData
 
     init {
-        getCharacterPhotos()
+        getCharactersPhotos()
     }
 
-    private fun getCharacterPhotos() {
+    private fun getCharactersPhotos() {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {
-                val response: CharactersResponse = Api.retrofitService.getCharacters()
-                val thumbnail = getThumbnail(response.data.results.get(0).name)
-                val url= getUrl(thumbnail)
-                screenData.value =
-                    screenData.value.copy(url = "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/portrait_incredible.jpg")
+                val characters: List<CharacterInfo> =
+                    api.getCharacters().data.results.map { getCharacterInfo(it.name) }
+                screenData.value = screenData.value.copy(characters = characters)
                 _status.value = ApiStatus.DONE
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
@@ -69,15 +53,17 @@ class MainViewModelImpl @Inject constructor() : ViewModel(), MainViewModel {
         }
     }
 
-    private suspend fun getThumbnail(name: String): Thumbnail {
-        var thumbNail = Thumbnail("", "")
+    private suspend fun getCharacterInfo(name: String): CharacterInfo {
         try {
-            val response = Api.retrofitService.getCharacter(name)
-            thumbNail = response.data.results.get(0).thumbnail
+            val character = api.getCharacter(name)//retrofitService.getCharacter(name)
+            return CharacterInfo(
+                url = getUrl(character.data.results[0].thumbnail),
+                description = character.data.results[0].description
+            )
         } catch (e: Exception) {
             Log.i("Error:", e.toString())
             _status.value = ApiStatus.ERROR
         }
-        return thumbNail
+        return CharacterInfo()
     }
 }
