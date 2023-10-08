@@ -2,6 +2,8 @@ package com.example.androidkotlintemplate
 
 import android.content.Context
 import androidx.room.Room
+import com.example.androidkotlintemplate.database.CharactersDatabase
+import com.example.androidkotlintemplate.network.ApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -45,6 +47,5 @@ class MainModule {
 
     @Singleton
     @Provides
-    fun provideApiService(retrofit: Retrofit):ApiService= retrofit.create(ApiService::class.java)
-
+    fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.androidkotlintemplate
+package com.example.androidkotlintemplate.database
 
 import androidx.room.*
 

@@ -4,6 +4,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.androidkotlintemplate.database.DatabaseCharacterInfo
+import com.example.androidkotlintemplate.network.ApiService
+import com.example.androidkotlintemplate.network.CharactersRepository
+import com.example.androidkotlintemplate.network.Thumbnail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -22,7 +26,7 @@ interface MainViewModel {
 @HiltViewModel
 class MainViewModelImpl @Inject constructor(
     private val apiService: ApiService,
-    private val charactersRepositoryImpl: CharactersRepositoryImpl
+    private val charactersRepository: CharactersRepository
 ) : ViewModel(), MainViewModel, ApiService by apiService {
 
     private val _status = MutableLiveData<ApiStatus>()
@@ -35,10 +39,12 @@ class MainViewModelImpl @Inject constructor(
         get() = _screenData
 
     init {
+        _status.value = ApiStatus.LOADING
         saveCharactersPhotos()
         viewModelScope.launch {
             try {
                 sendCharactersPhotos()
+                _status.value = ApiStatus.DONE
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
             }
@@ -50,7 +56,7 @@ class MainViewModelImpl @Inject constructor(
             try {
                 val characters: List<CharacterInfo> =
                     apiService.getCharacters().data.results.map { getCharacterInfo(it.name) }
-                charactersRepositoryImpl.refreshCharacters(
+                charactersRepository.refreshCharacters(
                     characters.map {
                         DatabaseCharacterInfo(
                             url = it.url,
@@ -65,7 +71,7 @@ class MainViewModelImpl @Inject constructor(
     }
 
     private suspend fun sendCharactersPhotos() {
-        val characters = charactersRepositoryImpl.getCharacters().map {
+        val characters = charactersRepository.getCharacters().map {
             CharacterInfo(
                 url = it.url,
                 description = it.description

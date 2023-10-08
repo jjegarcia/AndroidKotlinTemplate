@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package com.example.androidkotlintemplate
+package com.example.androidkotlintemplate.network
 
+import com.example.androidkotlintemplate.database.CharactersDatabase
+import com.example.androidkotlintemplate.database.DatabaseCharacterInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-interface CharactersRepository {
-    suspend fun getCharacters() :List<DatabaseCharacterInfo>
-    suspend fun refreshCharacters(characters: List<DatabaseCharacterInfo>)
-}
-
 /**
  * Repository for fetching characters data from the network and storing them on disk
  */
-class CharactersRepositoryImpl @Inject constructor(
+class CharactersRepository @Inject constructor(
     private val database: CharactersDatabase
 ){
     suspend fun getCharacters() :List<DatabaseCharacterInfo> = database.characterDao.getCharacters()

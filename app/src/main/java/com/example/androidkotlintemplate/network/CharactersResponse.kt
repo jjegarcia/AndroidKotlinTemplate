@@ -1,4 +1,4 @@
-package com.example.androidkotlintemplate
+package com.example.androidkotlintemplate.network
 
 import com.squareup.moshi.Json
 
