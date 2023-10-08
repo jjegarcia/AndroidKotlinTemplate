@@ -21,11 +21,11 @@ interface MainViewModel {
 
 @HiltViewModel
 class MainViewModelImpl @Inject constructor(
-    private val api: ApiService
-) : ViewModel(), MainViewModel, ApiService by api {
+    private val apiService: ApiService,
+    private val charactersRepositoryImpl: CharactersRepositoryImpl
+) : ViewModel(), MainViewModel, ApiService by apiService {
 
     private val _status = MutableLiveData<ApiStatus>()
-
     private val _screenData = MutableStateFlow(ScreenData())
 
     private fun getUrl(thumbnail: Thumbnail): String =
@@ -35,27 +35,49 @@ class MainViewModelImpl @Inject constructor(
         get() = _screenData
 
     init {
-        getCharactersPhotos()
-    }
-
-    private fun getCharactersPhotos() {
+        saveCharactersPhotos()
         viewModelScope.launch {
-            _status.value = ApiStatus.LOADING
             try {
-                val characters: List<CharacterInfo> =
-                    api.getCharacters().data.results.map { getCharacterInfo(it.name) }
-                screenData.value = screenData.value.copy(characters = characters)
-                _status.value = ApiStatus.DONE
+                sendCharactersPhotos()
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
-                _status.value = ApiStatus.ERROR
             }
         }
     }
 
+    private fun saveCharactersPhotos() {
+        viewModelScope.launch {
+            try {
+                val characters: List<CharacterInfo> =
+                    apiService.getCharacters().data.results.map { getCharacterInfo(it.name) }
+                charactersRepositoryImpl.refreshCharacters(
+                    characters.map {
+                        DatabaseCharacterInfo(
+                            url = it.url,
+                            description = it.description
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                Log.i("Error:", e.toString())
+            }
+        }
+    }
+
+    private suspend fun sendCharactersPhotos() {
+        val characters = charactersRepositoryImpl.getCharacters().map {
+            CharacterInfo(
+                url = it.url,
+                description = it.description
+            )
+        }
+        screenData.value = screenData.value.copy(characters = characters)
+    }
+
     private suspend fun getCharacterInfo(name: String): CharacterInfo {
         try {
-            val character = api.getCharacter(name)//retrofitService.getCharacter(name)
+            val character = apiService.getCharacter(name)
+
             return CharacterInfo(
                 url = getUrl(character.data.results[0].thumbnail),
                 description = character.data.results[0].description
