@@ -14,10 +14,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class ApiStatus { LOADING, ERROR, DONE }
-data class CharacterInfo(
-    val url: String = "",
-    val description: String = ""
-)
 
 interface MainViewModel {
     val screenData: MutableStateFlow<ScreenData>
@@ -41,6 +37,20 @@ class MainViewModelImpl @Inject constructor(
     init {
         _status.value = ApiStatus.LOADING
         saveCharactersPhotos()
+        updateUi()
+    }
+
+    private fun saveCharactersPhotos() {
+        viewModelScope.launch {
+            try {
+                cacheImages()
+            } catch (e: Exception) {
+                Log.i("Error:", e.toString())
+            }
+        }
+    }
+
+    private fun updateUi() {
         viewModelScope.launch {
             try {
                 sendCharactersPhotos()
@@ -51,28 +61,26 @@ class MainViewModelImpl @Inject constructor(
         }
     }
 
-    private fun saveCharactersPhotos() {
-        viewModelScope.launch {
-            try {
-                val characters: List<CharacterInfo> =
-                    apiService.getCharacters().data.results.map { getCharacterInfo(it.name) }
-                charactersRepository.refreshCharacters(
-                    characters.map {
-                        DatabaseCharacterInfo(
-                            url = it.url,
-                            description = it.description
-                        )
-                    }
+    private suspend fun cacheImages() {
+        val characters: List<CharacterInfo> =
+            apiService.getCharacters().data.results.map { getCharacterInfo(it.name) }
+        charactersRepository.refreshCharacters(
+            characters.map {
+                DatabaseCharacterInfo(
+                    id = it.id,
+                    name = it.name,
+                    url = it.url,
+                    description = it.description,
                 )
-            } catch (e: Exception) {
-                Log.i("Error:", e.toString())
             }
-        }
+        )
     }
 
     private suspend fun sendCharactersPhotos() {
         val characters = charactersRepository.getCharacters().map {
             CharacterInfo(
+                id = it.id,
+                name = it.name,
                 url = it.url,
                 description = it.description
             )
@@ -85,6 +93,8 @@ class MainViewModelImpl @Inject constructor(
             val character = apiService.getCharacter(name)
 
             return CharacterInfo(
+                id = character.data.results[0].id,
+                name = character.data.results[0].name,
                 url = getUrl(character.data.results[0].thumbnail),
                 description = character.data.results[0].description
             )

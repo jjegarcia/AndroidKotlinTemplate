@@ -18,13 +18,22 @@ package com.example.androidkotlintemplate.database
 
 import androidx.room.*
 
+@Entity
+data class DatabaseCharacterInfo constructor(
+    @PrimaryKey
+    val id: Int,
+    val name: String,
+    val url: String,
+    val description: String,
+)
+
 @Dao
 interface CharacterDao {
-    @Query("select * from databasecharacterinfo")
-     suspend fun getCharacters(): List<DatabaseCharacterInfo>
+    @Query("select * from databasecharacterinfo order by name ")
+    suspend fun getCharacters(): List<DatabaseCharacterInfo>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-   suspend fun insertAll(characters: List<DatabaseCharacterInfo>)
+    suspend fun insertAll(characters: List<DatabaseCharacterInfo>)
 }
 
 @Database(entities = [DatabaseCharacterInfo::class], version = 1)
