@@ -8,6 +8,7 @@ import com.example.androidkotlintemplate.database.DatabaseCharacterInfo
 import com.example.androidkotlintemplate.network.ApiService
 import com.example.androidkotlintemplate.network.CharactersRepository
 import com.example.androidkotlintemplate.network.Thumbnail
+import com.example.androidkotlintemplate.weblink.WebLinkLauncher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -17,13 +18,14 @@ enum class ApiStatus { LOADING, ERROR, DONE }
 
 interface MainViewModel {
     val screenData: MutableStateFlow<ScreenData>
-    fun onClicked(id: Int)
+    fun onClicked(url: String)
 }
 
 @HiltViewModel
 class MainViewModelImpl @Inject constructor(
     private val apiService: ApiService,
-    private val charactersRepository: CharactersRepository
+    private val charactersRepository: CharactersRepository,
+    private val webLinkLauncher: WebLinkLauncher
 ) : ViewModel(), MainViewModel, ApiService by apiService {
 
     private val _status = MutableLiveData<ApiStatus>()
@@ -35,8 +37,9 @@ class MainViewModelImpl @Inject constructor(
     override val screenData: MutableStateFlow<ScreenData>
         get() = _screenData
 
-    override fun onClicked(id: Int) {
-        Log.i("Test", "Clicked:$id")
+    override fun onClicked(url: String) {
+        Log.i("Test", "Clicked:$url")
+        webLinkLauncher.launchApplication(uRL = url)
     }
 
     init {
@@ -88,7 +91,7 @@ class MainViewModelImpl @Inject constructor(
                 name = it.name,
                 url = it.url,
                 description = it.description,
-                onClick = { id -> onClicked(id = id) }
+                onClick = { url -> onClicked(url = url) }
             )
         }
         screenData.value = screenData.value.copy(characters = characters)
