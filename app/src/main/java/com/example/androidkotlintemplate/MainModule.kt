@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.example.androidkotlintemplate.database.CharactersDatabase
 import com.example.androidkotlintemplate.network.ApiService
+import com.example.androidkotlintemplate.weblink.WebLinkLauncher
+import com.example.androidkotlintemplate.weblink.WeblinkLauncherImpl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -30,9 +32,11 @@ class MainModule {
     fun getDatabase(@ApplicationContext context: Context): CharactersDatabase {
         synchronized(CharactersDatabase::class.java) {
             if (!::INSTANCE.isInitialized) {
-                INSTANCE = Room.databaseBuilder(context.applicationContext,
+                INSTANCE = Room.databaseBuilder(
+                    context.applicationContext,
                     CharactersDatabase::class.java,
-                    "characters").build()
+                    "characters"
+                ).build()
             }
         }
         return INSTANCE
@@ -48,4 +52,9 @@ class MainModule {
     @Singleton
     @Provides
     fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideWeblinkLauncher(@ApplicationContext context: Context): WebLinkLauncher =
+        WeblinkLauncherImpl(context)
 }
