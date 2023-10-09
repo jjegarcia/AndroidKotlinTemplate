@@ -17,6 +17,7 @@ enum class ApiStatus { LOADING, ERROR, DONE }
 
 interface MainViewModel {
     val screenData: MutableStateFlow<ScreenData>
+    fun onClicked(id: Int)
 }
 
 @HiltViewModel
@@ -33,6 +34,10 @@ class MainViewModelImpl @Inject constructor(
 
     override val screenData: MutableStateFlow<ScreenData>
         get() = _screenData
+
+    override fun onClicked(id: Int) {
+        Log.i("Test", "Clicked:$id")
+    }
 
     init {
         _status.value = ApiStatus.LOADING
@@ -82,7 +87,8 @@ class MainViewModelImpl @Inject constructor(
                 id = it.id,
                 name = it.name,
                 url = it.url,
-                description = it.description
+                description = it.description,
+                onClick = { id -> onClicked(id = id) }
             )
         }
         screenData.value = screenData.value.copy(characters = characters)

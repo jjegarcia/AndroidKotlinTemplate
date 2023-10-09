@@ -21,7 +21,8 @@ data class CharacterInfo(
     val id: Int = -1,
     val name: String = "",
     val url: String = "",
-    val description: String = ""
+    val description: String = "",
+    val onClick: (Int) -> Unit = {}
 )
 
 data class ScreenData(
@@ -51,7 +52,7 @@ fun Greeting(viewModel: MainViewModelImpl, modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CharacterCard(characterInfo: CharacterInfo) {
-    Card(onClick = { /*TODO*/ }) {
+    Card(onClick = { characterInfo.onClick(characterInfo.id) }) {
         Text(text = characterInfo.name)
         Text(text = characterInfo.description)
         AsyncImage(
