@@ -1,18 +1,18 @@
-package com.example.androidkotlintemplate
+package com.example.androidkotlintemplate.screen
 
 import android.util.Log
 import com.example.androidkotlintemplate.database.DatabaseCharacterInfo
 import com.example.androidkotlintemplate.weblink.WebLinkLauncher
 import javax.inject.Inject
 
-interface CharactersMapper {
+interface CharactersUiMapper {
     fun onClicked(url: String)
 fun mapCharacters(characters: List<DatabaseCharacterInfo>): List<CharacterInfo>
 }
 
-class CharactersMapperImpl @Inject constructor(
+class CharactersUiMapperImpl @Inject constructor(
     private val webLinkLauncher: WebLinkLauncher
-    ) : CharactersMapper {
+    ) : CharactersUiMapper {
     override fun mapCharacters(characters: List<DatabaseCharacterInfo>): List<CharacterInfo> =
         characters.map {
             CharacterInfo(

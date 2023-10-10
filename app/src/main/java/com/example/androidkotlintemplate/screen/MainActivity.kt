@@ -1,4 +1,4 @@
-package com.example.androidkotlintemplate
+package com.example.androidkotlintemplate.screen
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

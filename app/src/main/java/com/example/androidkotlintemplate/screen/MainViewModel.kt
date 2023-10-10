@@ -1,13 +1,13 @@
-package com.example.androidkotlintemplate
+package com.example.androidkotlintemplate.screen
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.androidkotlintemplate.database.DatabaseCharacterInfo
+import com.example.androidkotlintemplate.database.CharactersDatabaseMapper
+import com.example.androidkotlintemplate.network.ApiMapper
 import com.example.androidkotlintemplate.network.ApiService
 import com.example.androidkotlintemplate.network.CharactersRepository
-import com.example.androidkotlintemplate.network.Thumbnail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -23,15 +23,15 @@ interface MainViewModel {
 class MainViewModelImpl @Inject constructor(
     private val apiService: ApiService,
     private val charactersRepository: CharactersRepository,
-    private val charactersMapper: CharactersMapper
+    private val charactersUiMapper: CharactersUiMapper,
+    private val charactersDatabaseMapper: CharactersDatabaseMapper,
+    private val apiMapper: ApiMapper
 ) : ViewModel(), MainViewModel, ApiService by apiService,
     CharactersRepository by charactersRepository {
 
     private val _status = MutableLiveData<ApiStatus>()
     private val _screenData = MutableStateFlow(ScreenData())
 
-    private fun getUrl(thumbnail: Thumbnail): String =
-        "${thumbnail.path}/portrait_incredible.${thumbnail.extension}"
 
     override val screenData: MutableStateFlow<ScreenData>
         get() = _screenData
@@ -45,7 +45,11 @@ class MainViewModelImpl @Inject constructor(
     private fun saveCharactersPhotos() {
         viewModelScope.launch {
             try {
-                cacheImages()
+                charactersRepository.refreshCharacters(
+                    charactersDatabaseMapper.mapCharacters(getCharacters().data.results
+                        .map { getCharacterInfo(it.name) }
+                    )
+                )
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
             }
@@ -55,7 +59,8 @@ class MainViewModelImpl @Inject constructor(
     private fun updateUi() {
         viewModelScope.launch {
             try {
-                sendCharactersPhotos()
+                screenData.value =
+                    screenData.value.copy(characters = charactersUiMapper.mapCharacters(characters()))
                 _status.value = ApiStatus.DONE
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
@@ -63,35 +68,9 @@ class MainViewModelImpl @Inject constructor(
         }
     }
 
-    private suspend fun cacheImages() {
-        val characters: List<CharacterInfo> =
-            getCharacters().data.results.map { getCharacterInfo(it.name) }
-        charactersRepository.refreshCharacters(
-            characters.map {
-                DatabaseCharacterInfo(
-                    id = it.id,
-                    name = it.name,
-                    url = it.url,
-                    description = it.description,
-                )
-            }
-        )
-    }
-
-    private suspend fun sendCharactersPhotos() {
-        screenData.value =
-            screenData.value.copy(characters = charactersMapper.mapCharacters(characters()))
-    }
-
     private suspend fun getCharacterInfo(name: String): CharacterInfo {
         try {
-            val character = getCharacter(name)
-            return CharacterInfo(
-                id = character.data.results[0].id,
-                name = character.data.results[0].name,
-                url = getUrl(character.data.results[0].thumbnail),
-                description = character.data.results[0].description
-            )
+            return apiMapper.getCharacter(name)
         } catch (e: Exception) {
             Log.i("Error:", e.toString())
             _status.value = ApiStatus.ERROR

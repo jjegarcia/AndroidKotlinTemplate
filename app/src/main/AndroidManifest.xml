@@ -18,7 +18,7 @@
         android:theme="@style/Theme.AndroidKotlinTemplate"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".screen.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AndroidKotlinTemplate">
             <intent-filter>
