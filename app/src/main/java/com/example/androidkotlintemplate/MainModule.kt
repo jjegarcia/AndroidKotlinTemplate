@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.example.androidkotlintemplate.database.CharactersDatabase
 import com.example.androidkotlintemplate.network.ApiService
+import com.example.androidkotlintemplate.network.CharactersRepository
+import com.example.androidkotlintemplate.network.CharactersRepositoryImpl
 import com.example.androidkotlintemplate.weblink.WebLinkLauncher
 import com.example.androidkotlintemplate.weblink.WeblinkLauncherImpl
 import com.squareup.moshi.Moshi
@@ -57,4 +59,9 @@ class MainModule {
     @Provides
     fun provideWeblinkLauncher(@ApplicationContext context: Context): WebLinkLauncher =
         WeblinkLauncherImpl(context)
+
+    @Singleton
+    @Provides
+    fun provideCharactersRepository(database: CharactersDatabase): CharactersRepository =
+        CharactersRepositoryImpl(database)
 }

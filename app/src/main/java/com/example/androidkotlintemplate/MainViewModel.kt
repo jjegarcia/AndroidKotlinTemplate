@@ -26,7 +26,7 @@ class MainViewModelImpl @Inject constructor(
     private val apiService: ApiService,
     private val charactersRepository: CharactersRepository,
     private val webLinkLauncher: WebLinkLauncher
-) : ViewModel(), MainViewModel, ApiService by apiService {
+) : ViewModel(), MainViewModel, ApiService by apiService, CharactersRepository by charactersRepository {
 
     private val _status = MutableLiveData<ApiStatus>()
     private val _screenData = MutableStateFlow(ScreenData())
@@ -71,7 +71,7 @@ class MainViewModelImpl @Inject constructor(
 
     private suspend fun cacheImages() {
         val characters: List<CharacterInfo> =
-            apiService.getCharacters().data.results.map { getCharacterInfo(it.name) }
+            getCharacters().data.results.map { getCharacterInfo(it.name) }
         charactersRepository.refreshCharacters(
             characters.map {
                 DatabaseCharacterInfo(
@@ -85,7 +85,7 @@ class MainViewModelImpl @Inject constructor(
     }
 
     private suspend fun sendCharactersPhotos() {
-        val characters = charactersRepository.getCharacters().map {
+        val characters = charactersRepository.characters().map {
             CharacterInfo(
                 id = it.id,
                 name = it.name,
@@ -99,8 +99,7 @@ class MainViewModelImpl @Inject constructor(
 
     private suspend fun getCharacterInfo(name: String): CharacterInfo {
         try {
-            val character = apiService.getCharacter(name)
-
+            val character = getCharacter(name)
             return CharacterInfo(
                 id = character.data.results[0].id,
                 name = character.data.results[0].name,
