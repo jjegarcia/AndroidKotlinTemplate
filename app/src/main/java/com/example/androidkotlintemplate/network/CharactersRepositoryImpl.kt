@@ -25,12 +25,19 @@ import javax.inject.Inject
 /**
  * Repository for fetching characters data from the network and storing them on disk
  */
-class CharactersRepository @Inject constructor(
-    private val database: CharactersDatabase
-){
-    suspend fun getCharacters() :List<DatabaseCharacterInfo> = database.characterDao.getCharacters()
 
-    suspend fun refreshCharacters(characters: List<DatabaseCharacterInfo>) {
+interface CharactersRepository {
+    suspend fun characters(): List<DatabaseCharacterInfo>
+    suspend fun refreshCharacters(characters: List<DatabaseCharacterInfo>)
+}
+
+class CharactersRepositoryImpl @Inject constructor(
+    private val database: CharactersDatabase
+) : CharactersRepository {
+    override suspend fun characters(): List<DatabaseCharacterInfo> =
+        database.characterDao.getCharacters()
+
+    override suspend fun refreshCharacters(characters: List<DatabaseCharacterInfo>) {
         withContext(Dispatchers.IO) {
             database.characterDao.insertAll(characters)
         }

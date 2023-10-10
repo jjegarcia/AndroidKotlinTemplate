@@ -1,4 +1,4 @@
-package com.example.androidkotlintemplate
+package com.example.androidkotlintemplate.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.R.drawable
 import coil.compose.AsyncImage
+import com.example.androidkotlintemplate.R
 
 data class CharacterInfo(
     val id: Int = -1,
