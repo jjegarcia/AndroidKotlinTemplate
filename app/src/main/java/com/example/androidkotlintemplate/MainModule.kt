@@ -64,4 +64,8 @@ class MainModule {
     @Provides
     fun provideCharactersRepository(database: CharactersDatabase): CharactersRepository =
         CharactersRepositoryImpl(database)
+    @Singleton
+    @Provides
+    fun provideCharactersMapper(webLinkLauncher: WebLinkLauncher): CharactersMapper =
+        CharactersMapperImpl(webLinkLauncher)
 }
