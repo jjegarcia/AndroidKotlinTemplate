@@ -1,7 +1,6 @@
 package com.example.androidkotlintemplate.screen
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidkotlintemplate.database.CharactersDatabaseMapper
@@ -13,10 +12,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class ApiStatus { LOADING, ERROR, DONE }
+//enum class ApiStatus { LOADING, ERROR, DONE }
+sealed class ApiStatus {
+    object Loading : ApiStatus()
+    object Error : ApiStatus()
+    object Done : ApiStatus()
+}
 
 interface MainViewModel {
     val screenData: MutableStateFlow<ScreenData>
+//    val status: MutableStateFlow<ApiStatus>
 }
 
 @HiltViewModel
@@ -29,17 +34,19 @@ class MainViewModelImpl @Inject constructor(
 ) : ViewModel(), MainViewModel, ApiService by apiService,
     CharactersRepository by charactersRepository {
 
-    private val _status = MutableLiveData<ApiStatus>()
+//    private val _status = MutableStateFlow<ApiStatus>(ApiStatus.Loading)
+//    override val status: MutableStateFlow<ApiStatus>
+//            get()= _status
+
     private val _screenData = MutableStateFlow(ScreenData())
-
-
     override val screenData: MutableStateFlow<ScreenData>
         get() = _screenData
 
-    init {
-        _status.value = ApiStatus.LOADING
-        saveCharactersPhotos()
-        updateUi()
+    fun init() {
+        viewModelScope.launch {
+            saveCharactersPhotos()
+            updateUi()
+        }
     }
 
     private fun saveCharactersPhotos() {
@@ -61,7 +68,7 @@ class MainViewModelImpl @Inject constructor(
             try {
                 screenData.value =
                     screenData.value.copy(characters = charactersUiMapper.mapCharacters(characters()))
-                _status.value = ApiStatus.DONE
+//                _status.value = ApiStatus.Done
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
             }
@@ -73,7 +80,7 @@ class MainViewModelImpl @Inject constructor(
             return apiMapper.getCharacter(name)
         } catch (e: Exception) {
             Log.i("Error:", e.toString())
-            _status.value = ApiStatus.ERROR
+//            _status.value = ApiStatus.Error
         }
         return CharacterInfo()
     }
