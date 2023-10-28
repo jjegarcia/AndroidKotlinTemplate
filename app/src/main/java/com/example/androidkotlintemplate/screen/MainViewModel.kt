@@ -41,7 +41,7 @@ class MainViewModelImpl @Inject constructor(
     override val screenData: StateFlow<ScreenData>
         get() = _screenData
 
-    init {
+   fun init() {
         saveCharactersPhotos()
         updateUi()
     }
