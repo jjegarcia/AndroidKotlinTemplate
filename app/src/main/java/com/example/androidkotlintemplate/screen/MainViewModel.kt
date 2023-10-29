@@ -18,6 +18,7 @@ sealed class ApiStatus {
     object Error : ApiStatus()
     object Done : ApiStatus()
 }
+
 interface MainViewModel {
     val screenData: StateFlow<ScreenData>
     val status: StateFlow<ApiStatus>
@@ -41,7 +42,7 @@ class MainViewModelImpl @Inject constructor(
     override val screenData: StateFlow<ScreenData>
         get() = _screenData
 
-   fun init() {
+    fun init() {
         saveCharactersPhotos()
         updateUi()
     }
@@ -56,6 +57,7 @@ class MainViewModelImpl @Inject constructor(
                 )
             } catch (e: Exception) {
                 Log.i("Error:", e.toString())
+                _status.value = ApiStatus.Error
             }
         }
     }

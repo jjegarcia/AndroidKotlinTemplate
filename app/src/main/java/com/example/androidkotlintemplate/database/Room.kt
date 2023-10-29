@@ -21,10 +21,10 @@ import androidx.room.*
 @Entity
 data class DatabaseCharacterInfo constructor(
     @PrimaryKey
-    val id: Int,
-    val name: String,
-    val url: String,
-    val description: String,
+    val id: Int = 0,
+    val name: String = "",
+    val url: String = "",
+    val description: String = "",
 )
 
 @Dao

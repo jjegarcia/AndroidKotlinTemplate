@@ -1,26 +1,21 @@
 package com.example.androidkotlintemplate
 
 import app.cash.turbine.test
-import app.cash.turbine.testIn
-import app.cash.turbine.turbineScope
 import com.example.androidkotlintemplate.database.CharactersDatabaseMapper
 import com.example.androidkotlintemplate.network.ApiMapper
 import com.example.androidkotlintemplate.network.ApiService
 import com.example.androidkotlintemplate.network.CharactersRepository
+import com.example.androidkotlintemplate.screen.ApiStatus
 import com.example.androidkotlintemplate.screen.CharactersUiMapper
 import com.example.androidkotlintemplate.screen.MainViewModelImpl
 import com.example.androidkotlintemplate.screen.ScreenData
+import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
-
-import org.junit.Assert.*
-import org.junit.Before
+import org.junit.Assert.assertEquals
 import org.junit.Rule
+import org.junit.Test
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -37,73 +32,69 @@ class MainViewModelTest {
     private val charactersUiMapper: CharactersUiMapper = mockk()
     private val charactersDatabaseMapper: CharactersDatabaseMapper = mockk()
     private val apiMapper: ApiMapper = mockk()
-    private lateinit var subject: MainViewModelImpl
-
-    @Before
-    fun setUp() {
-        subject = MainViewModelImpl(
-            apiService,
-            charactersRepository,
-            charactersUiMapper,
-            charactersDatabaseMapper,
-            apiMapper
-        )
-    }
+    private val subject = MainViewModelImpl(
+        apiService,
+        charactersRepository,
+        charactersUiMapper,
+        charactersDatabaseMapper,
+        apiMapper
+    )
 
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
-    }
-
-    @Test
-    fun `uno l`() {
-
+    fun `Given successful flow Then final status is ApiStatus_Done`() {
+        coEvery { charactersRepository.characters() } returns listOf()
+        coEvery { charactersUiMapper.mapCharacters(any()) } returns listOf()
+        coEvery { apiService.getCharacters(any(), any(), any()) } returns mockk()
+        coEvery { apiService.getCharacter(any(), any(), any(), any()) } returns mockk()
         runTest {
-            subject.init()
-        }
-    }
+            subject.status.test {
+                subject.init()
 
-    @Test
-    fun `dos _`() {
-        runTest {
-            flowOf("one", "two", "three")
-                .map {
-                    delay(100)
-                    it
-                }
-                .test {
-                    // 0 - 100ms -> no emission yet
-                    // 100ms - 200ms -> "one" is emitted
-                    // 200ms - 300ms -> "two" is emitted
-                    // 300ms - 400ms -> "three" is emitted
-                    delay(250)
-                    assertEquals("two", expectMostRecentItem())
-                    cancelAndIgnoreRemainingEvents()
-                }
-        }
-    }
-
-    @Test
-    fun `tres`() {
-        runTest {
-            flowOf("one", "two").test {
-                assertEquals("one", awaitItem())
-                assertEquals("two", awaitItem())
-                awaitComplete()
+                assertEquals(ApiStatus.Loading, awaitItem())
+                assertEquals(ApiStatus.Done, awaitItem())
+                ensureAllEventsConsumed()
             }
         }
     }
 
     @Test
-    fun `cuatro se`() {
+    fun `Given unsuccessful call  Then final status is ApiStatus_Done but reports Error`() {
+        coEvery { charactersRepository.characters() } returns listOf()
+        coEvery { charactersUiMapper.mapCharacters(any()) } returns listOf()
+        coEvery { apiService.getCharacters(any(), any(), any()) } returns mockk()
+        coEvery { apiService.getCharacter(any(), any(), any(), any()) } throws Exception()
+        runTest {
+            subject.status.test {
+                subject.init()
+
+                assertEquals(ApiStatus.Loading, awaitItem())
+                assertEquals(ApiStatus.Error, awaitItem())
+                assertEquals(ApiStatus.Done, awaitItem())
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given successful flow Then screenData got initialised `() {
+        coEvery { charactersRepository.characters() } returns listOf()
+        coEvery { charactersUiMapper.mapCharacters(any()) } returns listOf()
+        coEvery { apiService.getCharacters(any(), any(), any()) } returns mockk(relaxed = true)
+        coEvery {
+            apiService.getCharacter(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns mockk(relaxed = true)
 
         runTest {
-            turbineScope {
-                val turbine1 =
-                    flowOf(ScreenData("Test", listOf())).testIn(backgroundScope, name = "test1")
+            subject.screenData.test {
                 subject.init()
-                turbine1.awaitItem()
 
+                assertEquals(ScreenData(), awaitItem())
+                ensureAllEventsConsumed()
             }
         }
     }
